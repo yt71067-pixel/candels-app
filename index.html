@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aore Candles Shop</title>
+    <!-- Подключаем официальный скрипт Telegram Web App -->
+    <script src="https://telegram.org"></script>
+    <style>
+        body { font-family: sans-serif; background-color: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); padding: 20px; text-align: center; }
+        button { background: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); border: none; padding: 12px 24px; font-size: 16px; border-radius: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Магазин Aore Candles</h2>
+    <p>Выберите ароматную свечу:</p>
+    <select id="candle">
+        <option value="Кокос и Ваниль">🥥 Кокос и Ваниль</option>
+        <option value="Лаванда">🪻 Лаванда</option>
+        <option value="Табак и Бергамот">🪵 Табак и Бергамот</option>
+    </select>
+    <br><br>
+    <button id="orderBtn">Оформить заказ</button>
+
+    <script>
+        // Инициализация WebApp
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // Развернуть на весь экран
+
+        document.getElementById("orderBtn").addEventListener("click", () => {
+            let item = document.getElementById("candle").value;
+            // Отправляем данные обратно в бота в виде текста
+            tg.sendData("Выбран товар: " + item);
+            tg.close(); // Закрываем мини-приложение
+        });
+    </script>
+</body>
+</html>
