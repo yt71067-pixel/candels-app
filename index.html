@@ -690,7 +690,7 @@
       return;
     }
     var subtotal = cart.reduce(function(s,i){return s + i.unitPrice*i.qty;},0);
-    var delivery = subtotal > 3000 ? 0 : 250;
+    var delivery = subtotal > 3000 ? 0 : 5;
     ordersContent.innerHTML =
       '<div class="cart-list" id="cart-list">' + cart.map(cartItemHTML).join('') + '</div>'
       + '<div class="summary-card">'
@@ -700,7 +700,7 @@
       + '</div>'
       + '<div class="field-group">'
       +   '<div class="field"><label for="f-name">Имя</label><input id="f-name" type="text" placeholder="Как к вам обращаться"></div>'
-      +   '<div class="field"><label for="f-phone">Телефон</label><input id="f-phone" type="tel" placeholder="+7 900 000-00-00"></div>'
+      +   '<div class="field"><label for="f-phone">Телефон</label><input id="f-phone" type="tel" placeholder="+375 XX XXX-XX-XX"></div>'
       +   '<div class="field"><label for="f-address">Адрес доставки</label><input id="f-address" type="text" placeholder="Город, улица, дом, квартира"></div>'
       +   '<div class="field"><label for="f-comment">Комментарий к заказу</label><textarea id="f-comment" rows="2" placeholder="Например: позвонить за час"></textarea></div>'
       + '</div>'
@@ -734,7 +734,7 @@
       return;
     }
     var subtotal = cart.reduce(function(s,i){return s + i.unitPrice*i.qty;},0);
-    var delivery = subtotal > 3000 ? 0 : 250;
+    var delivery = subtotal > 3000 ? 0 : 5;
     var payload = {
       type:'candle_order',
       customer:{ name:name, phone:phone, address:address, comment:comment },
