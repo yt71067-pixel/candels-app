@@ -436,7 +436,7 @@
     </div>
 
     <div class="sheet-footer">
-      <div class="sheet-price"><small>Итого за штуку</small><span id="sheet-total">0 ₽</span></div>
+      <div class="sheet-price"><small>Итого за штуку</small><span id="sheet-total">0 руб</span></div>
       <button class="btn btn-primary" id="add-to-cart-btn">Добавить в заказ</button>
     </div>
   </div>
@@ -461,39 +461,39 @@
 
   /* ---------------- Data ---------------- */
   var PRODUCTS = [
-    { id:'jar',     name:'Свеча в стакане',   shape:'jar',     base:690, note:'Матовый стакан, широкое горение по всей поверхности' },
-    { id:'pillar',  name:'Свеча-столбик',     shape:'pillar',  base:790, note:'Плотный литой столбик без формы, держит на полке' },
-    { id:'faceted', name:'Гранёная свеча',    shape:'faceted', base:790, note:'Рельефные грани, красиво держит тень пламени' },
-    { id:'coupe',   name:'Свеча в бокале',    shape:'coupe',   base:990, note:'Свеча, отлитая в стеклянном бокале-креманке' }
+    { id:'jar',     name:'Свеча в стакане',   shape:'jar',     base:8, note:'Матовый стакан, широкое горение по всей поверхности' },
+    { id:'pillar',  name:'Свеча-столбик',     shape:'pillar',  base:9, note:'Плотный литой столбик без формы, держит на полке' },
+    { id:'faceted', name:'Гранёная свеча',    shape:'faceted', base:10, note:'Рельефные грани, красиво держит тень пламени' },
+    { id:'coupe',   name:'Свеча в бокале',    shape:'coupe',   base:12, note:'Свеча, отлитая в стеклянном бокале-креманке' }
   ];
 
   var WAX = [
     { id:'soy',      name:'Соевый',            note:'мягкое горение, эко',        delta:0 },
-    { id:'coconut',  name:'Кокосовый',         note:'насыщенный аромат',          delta:150 },
-    { id:'beesoy',   name:'Пчелиный + соевый', note:'медовый оттенок',            delta:220 },
-    { id:'paraffin', name:'Парафин',           note:'яркий цвет, быстрое горение', delta:-60 }
+    { id:'coconut',  name:'Кокосовый',         note:'насыщенный аромат',          delta:3 },
+    { id:'beesoy',   name:'Пчелиный + соевый', note:'медовый оттенок',            delta:4 },
+    { id:'paraffin', name:'Парафин',           note:'яркий цвет, быстрое горение', delta:1 }
   ];
 
   var WICK = [
     { id:'cotton', name:'Хлопковый',  note:'ровное пламя',        delta:0 },
-    { id:'wood',   name:'Деревянный', note:'треск, как камин',     delta:90 },
+    { id:'wood',   name:'Деревянный', note:'треск, как камин',     delta:2 },
     { id:'paper',  name:'Бумажный',   note:'для тонких свечей',    delta:0 }
   ];
 
   var SCENT = [
     { id:'none',    name:'Без аромата',        note:'чистый воск', delta:0 },
-    { id:'vanilla', name:'Ваниль и сандал',     note:'тёплый',      delta:130 },
-    { id:'cedar',   name:'Кедр и дым',          note:'древесный',   delta:130 },
-    { id:'fig',     name:'Инжир и зелень',      note:'свежий',      delta:130 },
-    { id:'sea',     name:'Морская соль',        note:'солёно-цитрусовый', delta:130 },
-    { id:'coffee',  name:'Кофе и какао',        note:'плотный',     delta:130 },
-    { id:'cotton',  name:'Хлопок и мускус',     note:'чистый',      delta:130 }
+    { id:'vanilla', name:'Ваниль и сандал',     note:'тёплый',      delta:2 },
+    { id:'cedar',   name:'Кедр и дым',          note:'древесный',   delta:2 },
+    { id:'fig',     name:'Инжир и зелень',      note:'свежий',      delta:2 },
+    { id:'sea',     name:'Морская соль',        note:'солёно-цитрусовый', delta:2 },
+    { id:'coffee',  name:'Кофе и какао',        note:'плотный',     delta:2 },
+    { id:'cotton',  name:'Хлопок и мускус',     note:'чистый',      delta:2 }
   ];
 
   var SIZE = [
     { id:'mini',  name:'Мини 100 мл',     note:'≈15 часов горения', delta:0 },
-    { id:'std',   name:'Стандарт 200 мл', note:'≈30 часов горения', delta:260 },
-    { id:'large', name:'Большая 350 мл',  note:'≈55 часов горения', delta:480 }
+    { id:'std',   name:'Стандарт 200 мл', note:'≈30 часов горения', delta:4 },
+    { id:'large', name:'Большая 350 мл',  note:'≈55 часов горения', delta:8 }
   ];
 
   /* ---------------- State ---------------- */
@@ -539,7 +539,7 @@
         + shapeSVG(p.shape,72,92)
         + '<span class="cname">'+p.name+'</span>'
         + '<span class="cnote">'+p.note+'</span>'
-        + '<span class="cprice">от '+p.base+' ₽</span>'
+        + '<span class="cprice">от '+p.base+' руб </span>'
         + '</button>';
     }).join('');
   }
@@ -560,7 +560,7 @@
   function chipListHTML(options, groupKey, selectedId){
     return options.map(function(o){
       var sel = o.id === selectedId ? ' selected' : '';
-      var deltaTxt = o.delta === 0 ? '—' : (o.delta > 0 ? '+'+o.delta+' ₽' : (o.delta)+' ₽');
+      var deltaTxt = o.delta === 0 ? '—' : (o.delta > 0 ? '+'+o.delta+' руб' : (o.delta)+' руб');
       return '<button type="button" class="chip'+sel+'" data-group="'+groupKey+'" data-id="'+o.id+'">'
         + '<span>'+o.name+'</span><span class="delta">'+o.note+' · '+deltaTxt+'</span></button>';
     }).join('');
@@ -598,7 +598,7 @@
   }
   function updateSheetTotal(){
     if(!current) return;
-    sheetTotalEl.textContent = unitPriceFor(current) + ' ₽';
+    sheetTotalEl.textContent = unitPriceFor(current) + ' руб';
   }
 
   document.querySelectorAll('.chip-list').forEach(function(list){
@@ -677,7 +677,7 @@
       +       '<span>'+item.qty+'</span>'
       +       '<button type="button" data-act="plus">+</button>'
       +     '</div>'
-      +     '<span class="item-price">'+(item.unitPrice*item.qty)+' ₽</span>'
+      +     '<span class="item-price">'+(item.unitPrice*item.qty)+' руб</span>'
       +   '</div>'
       +   '<button type="button" class="remove-link" data-act="remove">Убрать</button>'
       + '</div>'
@@ -694,9 +694,9 @@
     ordersContent.innerHTML =
       '<div class="cart-list" id="cart-list">' + cart.map(cartItemHTML).join('') + '</div>'
       + '<div class="summary-card">'
-      +   '<div class="summary-row"><span>Товары</span><span>'+subtotal+' ₽</span></div>'
-      +   '<div class="summary-row"><span>Доставка</span><span>'+(delivery===0?'бесплатно':delivery+' ₽')+'</span></div>'
-      +   '<div class="summary-row total"><span>Итого</span><span>'+(subtotal+delivery)+' ₽</span></div>'
+      +   '<div class="summary-row"><span>Товары</span><span>'+subtotal+' руб</span></div>'
+      +   '<div class="summary-row"><span>Доставка</span><span>'+(delivery===0?'бесплатно':delivery+' руб')+'</span></div>'
+      +   '<div class="summary-row total"><span>Итого</span><span>'+(subtotal+delivery)+' руб</span></div>'
       + '</div>'
       + '<div class="field-group">'
       +   '<div class="field"><label for="f-name">Имя</label><input id="f-name" type="text" placeholder="Как к вам обращаться"></div>'
@@ -704,7 +704,7 @@
       +   '<div class="field"><label for="f-address">Адрес доставки</label><input id="f-address" type="text" placeholder="Город, улица, дом, квартира"></div>'
       +   '<div class="field"><label for="f-comment">Комментарий к заказу</label><textarea id="f-comment" rows="2" placeholder="Например: позвонить за час"></textarea></div>'
       + '</div>'
-      + '<div class="checkout-bar"><button class="btn btn-primary" id="checkout-btn">Оформить заказ · '+(subtotal+delivery)+' ₽</button></div>'
+      + '<div class="checkout-bar"><button class="btn btn-primary" id="checkout-btn">Оформить заказ · '+(subtotal+delivery)+' руб</button></div>'
       + '<p class="order-note">Заказ уйдёт нашему боту в Telegram, менеджер свяжется для подтверждения.</p>';
   }
 
