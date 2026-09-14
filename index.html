@@ -6,33 +6,163 @@
     <title>Aore Candles Shop</title>
     <!-- Подключаем официальный скрипт Telegram Web App -->
     <script src="https://telegram.org"></script>
+
     <style>
-        body { font-family: sans-serif; background-color: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); padding: 20px; text-align: center; }
-        button { background: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); border: none; padding: 12px 24px; font-size: 16px; border-radius: 8px; cursor: pointer; }
+        body {
+            font-family: sans-serif;
+            color: var(--tg-theme-text-color);
+            padding: 20px;
+            text-align: center;
+            margin: 0;
+
+            /* 🖼️ ИНСТРУКЦИЯ ПО ФОНУ САЙТА:
+               Чтобы поставить картинку на фон, раскомментируйте (удалите /* и */) строки ниже
+               и замените 'ссылка_на_картинку.jpg' на реальный URL вашей картинки или путь к файлу. */
+
+            /*
+            background-image: url('https://example.com');
+            background-size: cover;       /* Растягивает картинку на весь экран */
+            background-position: center;  /* Центрирует изображение */
+            background-attachment: fixed; /* Фиксирует фон при скролле */
+            background-repeat: no-repeat; /* Запрещает размножение картинки */
+            */
+
+            /* Временный цвет фона, пока картинка не включена (берется из темы Telegram) */
+            background-color: var(--tg-theme-bg-color);
+        }
+
+        /* Стили для панели вкладок (меню сверху) */
+        .nav-tabs {
+            display: flex;
+            justify-content: space-around;
+            background-color: rgba(0, 0, 0, 0.05); /* Легкое затемнение фона меню */
+            padding: 10px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--tg-theme-hint-color); /* Цвет текста как у подсказок в ТГ */
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        /* Стиль для активной (выбранной) вкладки */
+        .tab-btn.active {
+            color: var(--tg-theme-button-color); /* Основной цвет кнопки ТГ */
+            border-bottom: 2px solid var(--tg-theme-button-color);
+        }
+
+        /* Стили для контента вкладок */
+        .tab-content {
+            display: none; /* По умолчанию скрываем все вкладки */
+        }
+
+        .tab-content.active {
+            display: block; /* Показываем только активную вкладку */
+        }
+
+        /* Стили кнопок внутри контента */
+        .order-btn {
+            background: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
-    <h2>Магазин Aore Candles</h2>
-    <p>Выберите ароматную свечу:</p>
-    <select id="candle">
-        <option value="Кокос и Ваниль">🥥 Кокос и Ваниль</option>
-        <option value="Лаванда">🪻 Лаванда</option>
-        <option value="Табак и Бергамот">🪵 Табак и Бергамот</option>
-    </select>
-    <br><br>
-    <button id="orderBtn">Оформить заказ</button>
+
+    <!-- 📌 ВЕРХНЕЕ МЕНЮ (ВКЛАДКИ) -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="openTab('home')">Главная</button>
+        <button class="tab-btn" onclick="openTab('catalog')">Каталог</button>
+        <button class="tab-btn" onclick="openTab('orders')">Заказы</button>
+    </div>
+
+    <!-- 📌 КОНТЕНТ ВКЛАДКИ: ГЛАВНАЯ -->
+    <div id="home" class="tab-content active">
+        <h2>Магазин Aore Candles</h2>
+        <p>Добро пожаловать в наш уютный магазин ароматических свечей ручной работы!</p>
+        <p>Перейдите в каталог, чтобы выбрать свой идеальный аромат.</p>
+    </div>
+
+    <!-- 📌 КОНТЕНТ ВКЛАДКИ: КАТАЛОГ -->
+    <div id="catalog" class="tab-content">
+        <h2>Каталог товаров</h2>
+        <p>Выберите ароматную свечу:</p>
+        <select id="candle">
+            <option value="Кокос и Ваниль">🥥 Кокос и Ваниль</option>
+            <option value="Лаванда">🪻 Лаванда</option>
+            <option value="Табак и Бергамот">🪵 Табак и Бергамот</option>
+        </select>
+        <br>
+        <button class="order-btn" id="orderBtn">Оформить заказ</button>
+    </div>
+
+    <!-- 📌 КОНТЕНТ ВКЛАДКИ: ЗАКАЗЫ -->
+    <div id="orders" class="tab-content">
+        <h2>Ваши заказы</h2>
+        <p>Здесь будет отображаться история ваших покупок.</p>
+    </div>
 
     <script>
-        // Инициализация WebApp
+        // Инициализация WebApp Telegram
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Развернуть на весь экран
+        tg.expand();
 
+        // Массив для хранения истории переходов по вкладкам (нужен для работы кнопки "Назад")
+        let tabHistory = ['home'];
+
+        // Показываем встроенную кнопку "Назад" в Telegram сразу при старте приложения
+        tg.BackButton.show();
+
+        // 🔄 ФУНКЦИЯ ДЛЯ ПЕРЕКЛЮЧЕНИЯ ВКЛАДОК
+        function openTab(tabId) {
+            // Скрываем весь контент и убираем активный класс у кнопок меню
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            // Показываем нужный контент и делаем кнопку меню активной
+            document.getElementById(tabId).classList.add('active');
+
+            // Находим кнопку меню по тексту или индексу и подсвечиваем её
+            const btnIndex = tabId === 'home' ? 0 : tabId === 'catalog' ? 1 : 2;
+            document.querySelectorAll('.tab-btn')[btnIndex].classList.add('active');
+
+            // Если мы переходим на новую вкладку (не через кнопку Назад), записываем её в историю
+            if (tabHistory[tabHistory.length - 1] !== tabId) {
+                tabHistory.push(tabId);
+            }
+        }
+
+        // 🔙 ОБРАБОТКА НАЖАТИЯ НА КНОПКУ "НАЗАД" В TELEGRAM
+        tg.BackButton.onClick(function() {
+            if (tabHistory.length > 1) {
+                tabHistory.pop(); // Удаляем текущую вкладку из истории
+                let previousTab = tabHistory[tabHistory.length - 1]; // Берем предыдущую
+                openTab(previousTab); // Открываем её
+            } else {
+                // Если мы уже на самой первой вкладке ('home') и кликаем назад — закрываем приложение
+                tg.close();
+            }
+        });
+
+        // Отправка данных боту при заказе
         document.getElementById("orderBtn").addEventListener("click", () => {
             let item = document.getElementById("candle").value;
-            // Отправляем данные обратно в бота в виде текста
             tg.sendData("Выбран товар: " + item);
-            tg.close(); // Закрываем мини-приложение
+            tg.close();
         });
     </script>
 </body>
+</html>
 </html>
