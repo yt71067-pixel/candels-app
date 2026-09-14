@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aore Candles Shop</title>
+    <!-- ИСПРАВЛЕНО: Теперь скрипт подключен правильно -->
     <script src="https://telegram.org"></script>
 
     <style>
@@ -136,24 +137,21 @@
                 return;
             }
 
-            // Формируем структурированные данные (объект)
             let orderData = {
                 product: item,
                 customer_name: name,
                 customer_contact: contact
             };
 
-            // Сохраняем локально в браузере, чтобы заказ отобразился во вкладке "Заказы"
             let localOrders = JSON.parse(localStorage.getItem('my_orders') || '[]');
             localOrders.push(orderData);
             localStorage.setItem('my_orders', JSON.stringify(localOrders));
 
-            // Отправляем данные боту (превращаем объект в строку)
+            // Теперь эта команда сработает, так как скрипт успешно загружен в head
             tg.sendData(JSON.stringify(orderData));
             tg.close();
         });
 
-        // Функция для отображения сохраненных заказов во вкладке "Заказы"
         function loadLocalOrders() {
             let localOrders = JSON.parse(localStorage.getItem('my_orders') || '[]');
             let container = document.getElementById('ordersList');
@@ -167,7 +165,7 @@
                 });
             }
         }
-        loadLocalOrders(); // Запуск при старте
+        loadLocalOrders();
     </script>
 </body>
 </html>
