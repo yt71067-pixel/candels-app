@@ -114,7 +114,7 @@
     line-height:1.55;
     max-width:320px;
   }
-  .cta-row{margin-top:22px;display:flex;gap:10px;}
+  .cta-row{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap;}
   .btn{
     border:none;
     border-radius:100px;
@@ -328,6 +328,26 @@
   }
   .sheet-price{font-family:'Fraunces',serif;font-size:22px;color:var(--wax-soft);}
   .sheet-price small{display:block;font-family:'Inter';font-size:11px;color:var(--muted);font-weight:400;}
+
+  /* ---------- READY-MADE CANDLES ---------- */
+  .ready-tag{
+    display:inline-block;margin-top:8px;font-size:11px;color:var(--wax-soft);
+    background:rgba(232,169,74,0.12);border:1px solid rgba(232,169,74,0.3);
+    border-radius:100px;padding:2px 9px;
+  }
+  .ready-desc{margin-top:20px;}
+  .ready-desc .rd-row{
+    display:flex;justify-content:space-between;gap:10px;padding:9px 0;
+    border-top:1px solid var(--line);font-size:13.5px;
+  }
+  .ready-desc .rd-row:first-child{border-top:none;}
+  .ready-desc .rd-row span:first-child{color:var(--muted);}
+  .ready-desc .rd-row span:last-child{color:var(--cream);text-align:right;max-width:60%;}
+  .ready-desc .rd-note{
+    margin-top:14px;font-size:13px;line-height:1.6;color:var(--muted);
+    background:var(--bg-card);border-radius:var(--radius-md);padding:14px;
+  }
+  #custom-options.hidden,.ready-desc.hidden{display:none;}
 </style>
 </head>
 <body>
@@ -356,6 +376,7 @@
       <p class="lede">Выбираете форму, воск, фитиль и аромат — мы разливаем и отправляем. Без готовых наборов и компромиссов.</p>
       <div class="cta-row">
         <button class="btn btn-primary" data-goto="catalog">Собрать свечу</button>
+        <button class="btn btn-ghost" data-goto="ready">Готовые свечи</button>
         <button class="btn btn-ghost" data-goto="orders">Мои заказы</button>
       </div>
     </div>
@@ -389,6 +410,13 @@
     <div class="catalog-grid" id="catalog-grid"></div>
   </section>
 
+  <!-- ============ READY-MADE ============ -->
+  <section id="view-ready" class="view">
+    <h2 class="view-title">Готовые свечи</h2>
+    <p class="view-sub">Уже собранные ароматы — без настройки, сразу в заказ.</p>
+    <div class="catalog-grid" id="ready-grid"></div>
+  </section>
+
   <!-- ============ ORDERS ============ -->
   <section id="view-orders" class="view">
     <h2 class="view-title">Заказ</h2>
@@ -410,22 +438,26 @@
       </div>
     </div>
 
-    <div class="opt-group">
-      <div class="label-row"><span class="name">Воск</span><span class="hint">выберите один</span></div>
-      <div class="chip-list" id="wax-options"></div>
+    <div id="custom-options">
+      <div class="opt-group">
+        <div class="label-row"><span class="name">Воск</span><span class="hint">выберите один</span></div>
+        <div class="chip-list" id="wax-options"></div>
+      </div>
+      <div class="opt-group">
+        <div class="label-row"><span class="name">Фитиль</span><span class="hint">выберите один</span></div>
+        <div class="chip-list" id="wick-options"></div>
+      </div>
+      <div class="opt-group">
+        <div class="label-row"><span class="name">Аромат</span><span class="hint">выберите один</span></div>
+        <div class="chip-list" id="scent-options"></div>
+      </div>
+      <div class="opt-group">
+        <div class="label-row"><span class="name">Размер</span><span class="hint">выберите один</span></div>
+        <div class="chip-list" id="size-options"></div>
+      </div>
     </div>
-    <div class="opt-group">
-      <div class="label-row"><span class="name">Фитиль</span><span class="hint">выберите один</span></div>
-      <div class="chip-list" id="wick-options"></div>
-    </div>
-    <div class="opt-group">
-      <div class="label-row"><span class="name">Аромат</span><span class="hint">выберите один</span></div>
-      <div class="chip-list" id="scent-options"></div>
-    </div>
-    <div class="opt-group">
-      <div class="label-row"><span class="name">Размер</span><span class="hint">выберите один</span></div>
-      <div class="chip-list" id="size-options"></div>
-    </div>
+
+    <div class="ready-desc hidden" id="ready-desc"></div>
 
     <div class="qty-row">
       <span class="name">Количество</span>
@@ -497,6 +529,57 @@
     { id:'large', name:'Большая 350 мл',  note:'≈55 часов горения', delta:8 }
   ];
 
+  /* ---------------- Ready-made candles ----------------
+     Цены не были указаны в исходном каталоге и проставлены
+     ориентировочно по весу/составу — поправьте поле price
+     под свои реальные цены. */
+  var READY_CANDLES = [
+    { id:'r1',  name:'«Тёплый вечер»',    shape:'jar',     wax:'Соевый воск', wick:'Хлопковый фитиль', scent:'Ваниль, сандал, амбра', weight:'200 г / 40 часов', form:'Стеклянный стакан', mood:'для уютных вечеров дома',
+      note:'Верхние ноты: лёгкая воздушная сладость ванили. Ноты сердца: бархатистый сандал, придаёт древесную структуру. Базовые ноты: тягучая тёплая амбра, оставляет долгий согревающий шлейф.', price:24 },
+    { id:'r2',  name:'«Лавандовое поле»', shape:'faceted', wax:'Соевый воск', wick:'Деревянный фитиль', scent:'Лаванда, ромашка', weight:'180 г / 35 часов', form:'Гипсовая фигура «лотос»', mood:'для расслабления и сна',
+      note:'Верхние ноты: свежие прохладные бутоны лаванды. Ноты сердца: нежная аптечная ромашка с цветочно-травяным оттенком. Базовые ноты: сухие луговые травы и тёплое сено.', price:23 },
+    { id:'r3',  name:'«Хвоя и кедр»',     shape:'jar',     wax:'Кокосовый воск', wick:'Деревянный фитиль', scent:'Сосна, кедр, бергамот', weight:'220 г / 45 часов', form:'Стеклянный стакан', mood:'для свежести и бодрости',
+      note:'Верхние ноты: искрящийся сочный бергамот. Ноты сердца: смолистая хвойная сосна. Базовые ноты: благородный тёплый кедр, делает аромат стойким.', price:27 },
+    { id:'r4',  name:'«Морской бриз»',    shape:'coupe',   wax:'Соевый воск', wick:'Хлопковый фитиль', scent:'Морская соль, мята', weight:'150 г / 30 часов', form:'Кокосовая скорлупа', mood:'для ванной и SPA',
+      note:'Верхние ноты: ледяная кудрявая мята. Ноты сердца: морская соль и озон. Базовые ноты: сухая древесина плавника и лёгкий белый мускус.', price:20 },
+    { id:'r5',  name:'«Кофе и корица»',   shape:'jar',     wax:'Парафин', wick:'Хлопковый фитиль', scent:'Кофе, корица, какао', weight:'200 г / 40 часов', form:'Стеклянный стакан', mood:'для кухни и утра',
+      note:'Верхние ноты: свежемолотый кофе. Ноты сердца: тёплая корица. Базовые ноты: тягучее какао и горький шоколад с шлейфом домашнего уюта.', price:22 },
+    { id:'r6',  name:'«Розовое вино»',    shape:'pillar',  wax:'Модельный воск', wick:'Хлопковый фитиль', scent:'Роза, ягоды, мускус', weight:'120 г / 25 часов', form:'Фигурная форма', mood:'подарок для неё',
+      note:'Верхние ноты: спелые искрящиеся ягоды. Ноты сердца: бархатистая дамасская роза. Базовые ноты: чувственный белый мускус, звучит долго и благородно.', price:19 },
+    { id:'r7',  name:'«Восточная сказка»',shape:'jar',     wax:'Кокосовый воск', wick:'Хлопковый фитиль', scent:'Уд, амбра, специи', weight:'250 г / 50 часов', form:'Стеклянный стакан', mood:'для атмосферы и медитации',
+      note:'Верхние ноты: пряные согревающие специи. Ноты сердца: мистический смолистый уд. Базовые ноты: тягучая густая амбра с роскошным обволакивающим шлейфом.', price:29 },
+    { id:'r8',  name:'«Цитрусовый микс»', shape:'coupe',   wax:'Соевый воск', wick:'Деревянный фитиль', scent:'Апельсин, лимон, лемонграсс', weight:'180 г / 35 часов', form:'Кокосовая скорлупа', mood:'для энергии и настроения',
+      note:'Верхние ноты: сочный апельсин и цедра лимона. Ноты сердца: терпкий лемонграсс. Базовые ноты: зелёные листья лимонного дерева, держат свежесть.', price:23 },
+    { id:'r9',  name:'«Пчелиная»',        shape:'pillar',  wax:'100% пчелиный воск', wick:'Хлопковый фитиль', scent:'без аромата, натуральный запах мёда', weight:'150 г / 30 часов', form:'Фигурная форма', mood:'для здоровья и очищения воздуха',
+      note:'Полностью натуральная свеча из пчелиного воска без отдушек — только естественный медовый запах.', price:21 },
+    { id:'r10', name:'Набор «4 времени года»', shape:'jar', wax:'—', wick:'Хлопковый фитиль', scent:'Мандарин / тюльпан, пион, хризантема / цитрус / кедр, хвоя, мох', weight:'4 × 60 г', form:'Стеклянный стакан', mood:'готовый подарок',
+      note:'Четыре мини-свечи с разными сезонными ароматами: зима — мандарин, весна — тюльпан/пион/хризантема, лето — цитрус, осень — кедр, хвоя, мох и влажная земля.', price:32 },
+    { id:'r11', name:'«Утренняя роза»',   shape:'faceted', wax:'Соевый воск', wick:'Хлопковый фитиль, лепестки роз', scent:'Роза', weight:'200 г / 40 часов', form:'Гипсовая «лотос»', mood:'свежий, лёгкий, для утра',
+      note:'Благородный моноаромат цветущей садовой розы: свежесть зелёных стеблей переходит в бархатистое сердце распустившегося бутона с мягким пудровым шлейфом.', price:25 },
+    { id:'r12', name:'«Весенний тюльпан»',shape:'faceted', wax:'Соевый воск', wick:'Деревянный фитиль, сушёные цветы', scent:'Тюльпан', weight:'180 г / 35 часов', form:'Гипсовая «лотос»', mood:'свежий, лёгкий, для утра',
+      note:'Утончённый весенний аромат: сочная прохлада зелёных стеблей и росы переходит в деликатное цветочное сердце из лепестков тюльпана на лёгкой мускусной базе.', price:24 },
+    { id:'r13', name:'«Пионовый сад»',    shape:'jar',     wax:'Соевый воск', wick:'Деревянный фитиль, розовые лепестки', scent:'Пион', weight:'220 г / 45 часов', form:'Стеклянный стакан', mood:'сладкий, густой, для подарка',
+      note:'Глубокий нежный цветочный аромат: тонкие ноты утренней росы и сочного личи переходят в роскошное сердце из лепестков пиона на мягкой мускусной базе.', price:27 },
+    { id:'r14', name:'«Сибирская пихта»', shape:'jar',     wax:'Кокосовый воск', wick:'Хлопковый фитиль, кедровая щепа', scent:'Сибирская пихта', weight:'200 г / 40 часов', form:'Стеклянный стакан', mood:'смолистый, глубокий, для бани',
+      note:'Густой смолистый хвойно-бальзамический аромат: морозная зелёная хвоя переходит в тёплое тягучее сердце из пихтовой живицы на базе лесного мха и коры.', price:26 },
+    { id:'r15', name:'«Мандарин и хвоя»', shape:'jar',     wax:'Соевый воск', wick:'Хлопковый фитиль', scent:'Мандарин, сосна', weight:'200 г / 40 часов', form:'Стеклянный стакан', mood:'новогодний, бодрящий',
+      note:'Праздничный бодрящий древесно-цитрусовый бленд: искрящаяся энергия спелого мандарина гармонично переплетена со смолистой сосновой хвоей.', price:24 },
+    { id:'r16', name:'«Клюква и хвоя»',   shape:'jar',     wax:'Соевый воск', wick:'Хлопковый фитиль', scent:'Клюква, ель', weight:'200 г / 40 часов', form:'Стеклянный стакан', mood:'кисло-сладкий, ягодный, зимний',
+      note:'Бодрящий праздничный ягодно-хвойный бленд: искрящаяся кислинка дикой клюквы переплетена со смолистой благородной еловой хвоей.', price:24 },
+    { id:'r17', name:'«Зелёный чай с лимоном и мятой»', shape:'jar', wax:'Соевый воск', wick:'Хлопковый фитиль', scent:'Чай, лимон, мята', weight:'200 г / 40 часов', form:'Стеклянный стакан', mood:'бодрящий, чистый, для кухни',
+      note:'Бодрящий чистый травяно-цитрусовый бленд: морозная мята и спелый лимон плавно переходят в терпкое сердце из листьев отборного чая.', price:24 },
+    { id:'r18', name:'«Чабрец»',          shape:'jar',     wax:'Соевый воск', wick:'Хлопковый фитиль', scent:'Чабрец', weight:'200 г / 40 часов', form:'Стеклянный стакан', mood:'тёплый, травяной, для медитации',
+      note:'Глубокий благородный пряно-травяной аромат: камфорная свежесть дикого тимьяна переходит в тёплое сердце из сухих луговых трав с бальзамическим шлейфом.', price:24 }
+  ];
+
+  /* ---------------- Telegram delivery ----------------
+     1) Напишите @BotFather в Telegram, создайте бота — получите TELEGRAM_BOT_TOKEN.
+     2) Напишите этому боту любое сообщение (например «старт»).
+     3) Откройте https://api.telegram.org/bot<ВАШ_ТОКЕН>/getUpdates и найдите "chat":{"id":ЧИСЛО} — это TELEGRAM_CHAT_ID.
+     4) Вставьте оба значения ниже. Заказы будут приходить боту прямо в этот чат. */
+  var TELEGRAM_BOT_TOKEN = '8942286221:AAG8a0VjAZnr6rKbejFXCeK7uMbCLfRvRBk';
+  var TELEGRAM_CHAT_ID   = '1065108532';
+
   /* ---------------- State ---------------- */
   var cart = [];               // {id, product, wax, wick, scent, size, qty, unitPrice}
   var current = null;          // customizing state
@@ -557,6 +640,25 @@
     openSheet(btn.getAttribute('data-product'));
   });
 
+  /* ---------------- Rendering: ready-made ---------------- */
+  var readyGrid = document.getElementById('ready-grid');
+  function renderReady(){
+    readyGrid.innerHTML = READY_CANDLES.map(function(r){
+      return '<button class="candle-card" type="button" data-ready="'+r.id+'">'
+        + shapeSVG(r.shape,72,92)
+        + '<span class="cname">'+r.name+'</span>'
+        + '<span class="cnote">'+r.scent+'</span>'
+        + '<span class="cprice">'+r.price+' руб</span>'
+        + '<span class="ready-tag">'+r.weight+'</span>'
+        + '</button>';
+    }).join('');
+  }
+  readyGrid.addEventListener('click', function(e){
+    var btn = e.target.closest('.candle-card');
+    if(!btn) return;
+    openReadySheet(btn.getAttribute('data-ready'));
+  });
+
   /* ---------------- Sheet / customizer ---------------- */
   var sheetOverlay = document.getElementById('sheet-overlay');
   var sheetIcon = document.getElementById('sheet-icon');
@@ -574,10 +676,14 @@
     }).join('');
   }
 
+  var customOptionsEl = document.getElementById('custom-options');
+  var readyDescEl = document.getElementById('ready-desc');
+  var addToCartBtn = document.getElementById('add-to-cart-btn');
+
   function openSheet(productId){
     var product = PRODUCTS.filter(function(p){return p.id===productId;})[0];
     if(!product) return;
-    current = { product:product, wax:'soy', wick:'cotton', scent:'none', size:'mini', qty:1 };
+    current = { type:'custom', product:product, wax:'soy', wick:'cotton', scent:'none', size:'mini', qty:1 };
     sheetIcon.innerHTML = shapeSVG(product.shape,44,60).replace(/^<svg[^>]*>|<\/svg>$/g,'');
     sheetTitle.textContent = product.name;
     sheetDesc.textContent = product.note;
@@ -585,10 +691,36 @@
     document.getElementById('wick-options').innerHTML = chipListHTML(WICK,'wick',current.wick);
     document.getElementById('scent-options').innerHTML = chipListHTML(SCENT,'scent',current.scent);
     document.getElementById('size-options').innerHTML = chipListHTML(SIZE,'size',current.size);
+    customOptionsEl.classList.remove('hidden');
+    readyDescEl.classList.add('hidden');
     qtyValueEl.textContent = current.qty;
+    addToCartBtn.textContent = 'Добавить в заказ';
     updateSheetTotal();
     sheetOverlay.classList.add('open');
   }
+
+  function openReadySheet(readyId){
+    var ready = READY_CANDLES.filter(function(r){return r.id===readyId;})[0];
+    if(!ready) return;
+    current = { type:'ready', ready:ready, qty:1 };
+    sheetIcon.innerHTML = shapeSVG(ready.shape,44,60).replace(/^<svg[^>]*>|<\/svg>$/g,'');
+    sheetTitle.textContent = ready.name;
+    sheetDesc.textContent = ready.mood;
+    readyDescEl.innerHTML =
+        '<div class="rd-row"><span>Воск</span><span>'+ready.wax+'</span></div>'
+      + '<div class="rd-row"><span>Фитиль</span><span>'+ready.wick+'</span></div>'
+      + '<div class="rd-row"><span>Аромат</span><span>'+ready.scent+'</span></div>'
+      + '<div class="rd-row"><span>Вес / горение</span><span>'+ready.weight+'</span></div>'
+      + '<div class="rd-row"><span>Форма</span><span>'+ready.form+'</span></div>'
+      + '<div class="rd-note">'+ready.note+'</div>';
+    customOptionsEl.classList.add('hidden');
+    readyDescEl.classList.remove('hidden');
+    qtyValueEl.textContent = current.qty;
+    addToCartBtn.textContent = 'Добавить в заказ';
+    updateSheetTotal();
+    sheetOverlay.classList.add('open');
+  }
+
   function closeSheet(){
     sheetOverlay.classList.remove('open');
     current = null;
@@ -602,6 +734,7 @@
     return m ? m.delta : 0;
   }
   function unitPriceFor(state){
+    if(state.type === 'ready') return state.ready.price;
     return state.product.base + findDelta(WAX,state.wax) + findDelta(WICK,state.wick) + findDelta(SCENT,state.scent) + findDelta(SIZE,state.size);
   }
   function updateSheetTotal(){
@@ -632,20 +765,33 @@
     qtyValueEl.textContent = current.qty;
   });
 
-  document.getElementById('add-to-cart-btn').addEventListener('click', function(){
+  addToCartBtn.addEventListener('click', function(){
     if(!current) return;
     var unit = unitPriceFor(current);
     cartCounter++;
-    cart.push({
-      cid: 'c'+cartCounter,
-      product: current.product,
-      wax: WAX.filter(function(o){return o.id===current.wax;})[0],
-      wick: WICK.filter(function(o){return o.id===current.wick;})[0],
-      scent: SCENT.filter(function(o){return o.id===current.scent;})[0],
-      size: SIZE.filter(function(o){return o.id===current.size;})[0],
-      qty: current.qty,
-      unitPrice: unit
-    });
+    if(current.type === 'ready'){
+      cart.push({
+        cid: 'c'+cartCounter,
+        name: current.ready.name,
+        shapeKey: current.ready.shape,
+        optsText: current.ready.wax+' · '+current.ready.wick+' · '+current.ready.scent+' · '+current.ready.weight,
+        qty: current.qty,
+        unitPrice: unit
+      });
+    } else {
+      var wax = WAX.filter(function(o){return o.id===current.wax;})[0];
+      var wick = WICK.filter(function(o){return o.id===current.wick;})[0];
+      var scent = SCENT.filter(function(o){return o.id===current.scent;})[0];
+      var size = SIZE.filter(function(o){return o.id===current.size;})[0];
+      cart.push({
+        cid: 'c'+cartCounter,
+        name: current.product.name,
+        shapeKey: current.product.shape,
+        optsText: wax.name+' · '+wick.name+' · '+scent.name+' · '+size.name,
+        qty: current.qty,
+        unitPrice: unit
+      });
+    }
     closeSheet();
     renderOrders();
     updateTabBadge();
@@ -675,10 +821,10 @@
 
   function cartItemHTML(item){
     return '<div class="cart-item" data-cid="'+item.cid+'">'
-      + '<div class="thumb">'+shapeSVG(item.product.shape,46,64)+'</div>'
+      + '<div class="thumb">'+shapeSVG(item.shapeKey,46,64)+'</div>'
       + '<div class="info">'
-      +   '<div class="cname">'+item.product.name+'</div>'
-      +   '<div class="opts">'+item.wax.name+' · '+item.wick.name+' · '+item.scent.name+' · '+item.size.name+'</div>'
+      +   '<div class="cname">'+item.name+'</div>'
+      +   '<div class="opts">'+item.optsText+'</div>'
       +   '<div class="row-bottom">'
       +     '<div class="qty-controls">'
       +       '<button type="button" data-act="minus">−</button>'
@@ -731,6 +877,30 @@
     }
   });
 
+  function escapeHtml(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function buildOrderText(customer, items, subtotal, delivery, total){
+    var lines = [];
+    lines.push('🕯 <b>Новый заказ — Тёплый воск</b>');
+    lines.push('');
+    lines.push('👤 Имя: '+escapeHtml(customer.name));
+    lines.push('📞 Телефон: '+escapeHtml(customer.phone));
+    lines.push('📍 Адрес: '+escapeHtml(customer.address));
+    if(customer.comment && customer.comment.trim()) lines.push('💬 Комментарий: '+escapeHtml(customer.comment));
+    lines.push('');
+    lines.push('<b>Товары:</b>');
+    items.forEach(function(it, idx){
+      lines.push((idx+1)+') '+escapeHtml(it.name)+' — '+escapeHtml(it.optsText)+' × '+it.qty+' = '+(it.unitPrice*it.qty)+' руб');
+    });
+    lines.push('');
+    lines.push('Товары: '+subtotal+' руб');
+    lines.push('Доставка: '+(delivery===0?'бесплатно':delivery+' руб'));
+    lines.push('<b>Итого: '+total+' руб</b>');
+    return lines.join('\n');
+  }
+
   function submitOrder(){
     if(cart.length === 0) return;
     var name = (document.getElementById('f-name')||{}).value || '';
@@ -743,28 +913,51 @@
     }
     var subtotal = cart.reduce(function(s,i){return s + i.unitPrice*i.qty;},0);
     var delivery = subtotal > 30 ? 0 : 5;
-    var payload = {
-      type:'candle_order',
-      customer:{ name:name, phone:phone, address:address, comment:comment },
-      items: cart.map(function(i){
-        return { product:i.product.name, wax:i.wax.name, wick:i.wick.name, scent:i.scent.name, size:i.size.name, qty:i.qty, unitPrice:i.unitPrice };
-      }),
-      subtotal: subtotal, delivery: delivery, total: subtotal+delivery
-    };
-    if(tg && typeof tg.sendData === 'function'){
-      try{
-        tg.sendData(JSON.stringify(payload));
-        showToast('Заказ отправлен');
-      }catch(e){
-        showToast('Не удалось отправить заказ');
-      }
-    } else {
-      showToast('Откройте приложение в Telegram, чтобы отправить заказ');
+    var total = subtotal + delivery;
+    var customer = { name:name, phone:phone, address:address, comment:comment };
+    var text = buildOrderText(customer, cart, subtotal, delivery, total);
+
+    var checkoutBtn = document.getElementById('checkout-btn');
+    if(checkoutBtn){ checkoutBtn.disabled = true; checkoutBtn.textContent = 'Отправляем…'; }
+
+    function onSuccess(){
+      showToast('Заказ отправлен, скоро свяжемся!');
+      cart = [];
+      renderOrders();
+      updateTabBadge();
+      if(tg && tg.HapticFeedback) { try{ tg.HapticFeedback.notificationOccurred('success'); }catch(e){} }
     }
+    function onFailure(){
+      if(checkoutBtn){ checkoutBtn.disabled = false; checkoutBtn.textContent = 'Оформить заказ · '+total+' руб'; }
+      showToast('Не удалось отправить заказ, попробуйте ещё раз');
+    }
+
+    if(!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN.indexOf('ВАШ_') === 0){
+      // Токен ещё не настроен — пробуем запасной способ (Telegram Mini App) или сообщаем об этом.
+      if(tg && typeof tg.sendData === 'function'){
+        try{ tg.sendData(JSON.stringify({customer:customer, items:cart, subtotal:subtotal, delivery:delivery, total:total})); onSuccess(); }
+        catch(e){ onFailure(); }
+      } else {
+        if(checkoutBtn){ checkoutBtn.disabled = false; checkoutBtn.textContent = 'Оформить заказ · '+total+' руб'; }
+        showToast('Настройте TELEGRAM_BOT_TOKEN в коде сайта');
+      }
+      return;
+    }
+
+    fetch('https://api.telegram.org/bot'+TELEGRAM_BOT_TOKEN+'/sendMessage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text, parse_mode: 'HTML' })
+    })
+    .then(function(res){ return res.json(); })
+    .then(function(data){
+      if(data && data.ok){ onSuccess(); } else { onFailure(); }
+    })
+    .catch(function(){ onFailure(); });
   }
 
   /* ---------------- Tabs ---------------- */
-  var views = { home:document.getElementById('view-home'), catalog:document.getElementById('view-catalog'), orders:document.getElementById('view-orders') };
+  var views = { home:document.getElementById('view-home'), catalog:document.getElementById('view-catalog'), ready:document.getElementById('view-ready'), orders:document.getElementById('view-orders') };
   var tabButtons = document.querySelectorAll('.tab-btn');
   function switchView(name){
     Object.keys(views).forEach(function(k){ views[k].classList.toggle('active', k===name); });
@@ -788,6 +981,7 @@
 
   /* ---------------- Init ---------------- */
   renderCatalog();
+  renderReady();
   renderOrders();
 })();
 </script>
@@ -802,6 +996,10 @@
       <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.3" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="4" width="7" height="7" rx="1.3" stroke="currentColor" stroke-width="1.8"/><rect x="4" y="13" width="7" height="7" rx="1.3" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="13" width="7" height="7" rx="1.3" stroke="currentColor" stroke-width="1.8"/></svg>
       Каталог
     </button>
+    <button class="tab-btn" data-view="ready" type="button">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M9 10h6l-0.6 8.5a2.4 2.4 0 0 1-2.4 2.2h-0a2.4 2.4 0 0 1-2.4-2.2L9 10z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 3c1.8 2.6 3.2 4.6 3.2 6.6C15.2 11.6 13.8 13 12 13s-3.2-1.4-3.2-3.4C8.8 7.6 10.2 5.6 12 3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      Готовые
+    </button>
     <button class="tab-btn" data-view="orders" type="button" style="position:relative;">
       <svg viewBox="0 0 24 24" fill="none"><path d="M6 8h12l-1 11.5a1.5 1.5 0 0 1-1.5 1.5h-7a1.5 1.5 0 0 1-1.5-1.5L6 8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.8"/></svg>
       Заказы
@@ -809,10 +1007,6 @@
     </button>
   </div>
 </nav>
-
-</body>
-</html>
-
 
 </body>
 </html>
