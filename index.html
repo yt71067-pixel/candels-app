@@ -824,7 +824,7 @@
       return;
     }
     var subtotal = cart.reduce(function(s,i){return s + i.unitPrice*i.qty;},0);
-    var delivery = subtotal > 30 ? 0 : 5;
+    var delivery = subtotal > 100 ? 0 : 5;
     ordersContent.innerHTML =
       '<div class="cart-list" id="cart-list">' + cart.map(cartItemHTML).join('') + '</div>'
       + '<div class="summary-card">'
