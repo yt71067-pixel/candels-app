@@ -871,6 +871,30 @@
     return lines.join('\n');
   }
 
+  function buildCustomerText(items, total){
+    var lines = [];
+    lines.push('🕯 <b>Ваш заказ принят — Тёплый воск</b>');
+    lines.push('');
+    lines.push('<b>Товары:</b>');
+    items.forEach(function(it, idx){
+      lines.push((idx+1)+') '+escapeHtml(it.name)+' — '+escapeHtml(it.optsText)+' × '+it.qty+' = '+(it.unitPrice*it.qty)+' руб');
+    });
+    lines.push('');
+    lines.push('<b>Итого: '+total+' руб</b>');
+    lines.push('');
+    lines.push('📍 Самовывоз: г. Витебск, пр-т Фрунзе 45, кв 29');
+    lines.push('Доставки нет. Менеджер свяжется с вами для подтверждения.');
+    return lines.join('\n');
+  }
+
+  function tgSend(chatId, text){
+    return fetch('https://api.telegram.org/bot'+TELEGRAM_BOT_TOKEN+'/sendMessage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: 'HTML' })
+    }).then(function(res){ return res.json(); });
+  }
+
   function submitOrder(){
     if(cart.length === 0) return;
     var name = (document.getElementById('f-name')||{}).value || '';
@@ -912,14 +936,18 @@
       return;
     }
 
-    fetch('https://api.telegram.org/bot'+TELEGRAM_BOT_TOKEN+'/sendMessage', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text, parse_mode: 'HTML' })
-    })
-    .then(function(res){ return res.json(); })
+    // Копия для заказчика — только если сайт открыт внутри Telegram и мы знаем его id
+    var customerId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
+
+    tgSend(TELEGRAM_CHAT_ID, text)
     .then(function(data){
-      if(data && data.ok){ onSuccess(); } else { onFailure(); }
+      if(data && data.ok){
+        if(customerId){
+          // ошибка отправки клиенту (например, он не нажал Start у бота) не мешает заказу
+          tgSend(customerId, buildCustomerText(cart, total)).catch(function(){});
+        }
+        onSuccess();
+      } else { onFailure(); }
     })
     .catch(function(){ onFailure(); });
   }
