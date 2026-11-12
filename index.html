@@ -348,6 +348,7 @@
     background:var(--bg-card);border-radius:var(--radius-md);padding:14px;
   }
   #custom-options.hidden,.ready-desc.hidden{display:none;}
+.pickup-card{margin:14px 0;padding:12px 14px;border-radius:14px;background:rgba(0,0,0,.05);font-size:14px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -420,7 +421,7 @@
   <!-- ============ ORDERS ============ -->
   <section id="view-orders" class="view">
     <h2 class="view-title">Заказ</h2>
-    <p class="view-sub">Собранные свечи и оформление доставки.</p>
+    <p class="view-sub">Собранные свечи и оформление самовывоза.</p>
     <div id="orders-content"></div>
   </section>
 
@@ -529,27 +530,18 @@
      Каталог готовых свечей из документа «свечи.docx».
      Цена зависит от размера: маленькая 120 мл — 20, средняя 180 мл — 30, большая 240 мл — 40. */
   var READY_CANDLES = [
-    { id:'r1', name:'«Чистый тюльпан»', size:'Маленькая', vol:'120 мл', price:20, scent:'«Тюльпан»',
-      tagline:'«Весна в вашем доме»',
-      note:'Утонченный и свежий аромат, передающий чистоту первого весеннего цветка. Легкий, ненавязчивый и по-настоящему элегантный. Идеально подходит для создания весеннего настроения, утренних ритуалов или для небольшой уютной комнаты. Дарит ощущение легкости и обновления.' },
     { id:'r2', name:'«Цветочный сад»', size:'Маленькая', vol:'120 мл', price:20, scent:'«Жасмин» + «Пион и нероли»',
       tagline:'«Прогулка среди цветущих клумб»',
       note:'Насыщенная и многогранная композиция, в которой переплетаются ноты жасмина, пиона и нежности нероли. Этот аромат словно переносит вас в цветущий сад после летнего дождя. Прекрасный выбор для тех, кто любит яркие, но при этом мягкие и обволакивающие цветочные ароматы.' },
     { id:'r3', name:'«Прованс»', size:'Маленькая', vol:'120 мл', price:20, scent:'«Лаванда»',
       tagline:'«Уют французской деревни»',
       note:'Расслабляющий и глубокий аромат лаванды, который мгновенно снимает напряжение после долгого дня. Ассоциируется с бескрайними лавандовыми полями Прованса и теплыми вечерами. Отлично подходит для спальни, создания атмосферы спокойствия и подготовки ко сну.' },
-    { id:'r4', name:'«Королевский жасмин»', size:'Средняя', vol:'180 мл', price:30, scent:'«Жасмин»',
-      tagline:'«Изысканность и роскошь»',
-      note:'Чувственный и благородный аромат жасмина — классика парфюмерии. Он глубокий, сладковатый и обладает легким дурманящим эффектом. Это аромат для особых моментов, романтических вечеров и создания по-настоящему роскошной атмосферы в гостиной.' },
     { id:'r5', name:'«Весеннее утро»', size:'Средняя', vol:'180 мл', price:30, scent:'«Тюльпан» + «Пион и нероли»',
       tagline:'«Свежесть нового дня»',
       note:'Живая и жизнерадостная композиция, сочетающая в себе первые ноты тюльпана, пышность пиона и свежесть нероли. Аромат пробуждения природы, который наполняет дом светом и позитивной энергией. Идеально для кухни или прихожей, чтобы начать день с улыбки.' },
     { id:'r6', name:'«Медитация»', size:'Средняя', vol:'180 мл', price:30, scent:'«Лаванда» + «Роза и сандал»',
       tagline:'«Гармония и внутренний покой»',
       note:'Сбалансированный аромат для перезагрузки. Лаванда успокаивает, роза дарит ощущение любви и тепла, а сандал добавляет древесной мудрости и уюта. Этот аромат помогает сосредоточиться, отключить мысли и настроиться на спокойный отдых или йогу.' },
-    { id:'r7', name:'«Роскошный пион»', size:'Большая', vol:'240 мл', price:40, scent:'«Пион и нероли»',
-      tagline:'«Пышное цветение»',
-      note:'Глубокий и насыщенный аромат пиона с элегантными нотами нероли. Это гимн женственности и красоте. Благодаря большому размеру, свеча идеально подходит для просторных помещений, наполняя их тонким, дорогим и очень стойким благоуханием цветов.' },
     { id:'r8', name:'«Восточная роза»', size:'Большая', vol:'240 мл', price:40, scent:'«Роза и сандал»',
       tagline:'«Тепло и чувственность»',
       note:'Классическое сочетание чарующей розы и теплого, смолистого сандала. Аромат с восточным характером, который создает атмосферу таинственности и уюта. Отлично согревает в холодное время года и делает вечер особенно атмосферным и уютным.' },
@@ -824,22 +816,21 @@
       return;
     }
     var subtotal = cart.reduce(function(s,i){return s + i.unitPrice*i.qty;},0);
-    var delivery = subtotal > 100 ? 0 : 5;
     ordersContent.innerHTML =
       '<div class="cart-list" id="cart-list">' + cart.map(cartItemHTML).join('') + '</div>'
       + '<div class="summary-card">'
       +   '<div class="summary-row"><span>Товары</span><span>'+subtotal+' руб</span></div>'
-      +   '<div class="summary-row"><span>Доставка</span><span>'+(delivery===0?'бесплатно':delivery+' руб')+'</span></div>'
-      +   '<div class="summary-row total"><span>Итого</span><span>'+(subtotal+delivery)+' руб</span></div>'
+      +   '<div class="summary-row"><span>Получение</span><span>Самовывоз</span></div>'
+      +   '<div class="summary-row total"><span>Итого</span><span>'+subtotal+' руб</span></div>'
       + '</div>'
+      + '<div class="pickup-card"><b>Только самовывоз</b><br>Доставки нет. Забрать заказ можно по адресу:<br>г. Витебск, пр-т Фрунзе 45, кв 29</div>'
       + '<div class="field-group">'
       +   '<div class="field"><label for="f-name">Имя</label><input id="f-name" type="text" placeholder="Как к вам обращаться"></div>'
       +   '<div class="field"><label for="f-phone">Телефон</label><input id="f-phone" type="tel" placeholder="+375 XX XXX-XX-XX"></div>'
-      +   '<div class="field"><label for="f-address">Адрес доставки</label><input id="f-address" type="text" placeholder="Город, улица, дом, квартира"></div>'
       +   '<div class="field"><label for="f-comment">Комментарий к заказу</label><textarea id="f-comment" rows="2" placeholder="Например: позвонить за час"></textarea></div>'
       + '</div>'
-      + '<div class="checkout-bar"><button class="btn btn-primary" id="checkout-btn">Оформить заказ · '+(subtotal+delivery)+' руб</button></div>'
-      + '<p class="order-note">Заказ уйдёт нашему боту в Telegram, менеджер свяжется для подтверждения.</p>';
+      + '<div class="checkout-bar"><button class="btn btn-primary" id="checkout-btn">Оформить заказ · '+subtotal+' руб</button></div>'
+      + '<p class="order-note">Заказ уйдёт нашему боту в Telegram, менеджер свяжется для подтверждения. Самовывоз: г. Витебск, пр-т Фрунзе 45, кв 29.</p>';
   }
 
   ordersContent.addEventListener('click', function(e){
@@ -861,13 +852,13 @@
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  function buildOrderText(customer, items, subtotal, delivery, total){
+  function buildOrderText(customer, items, subtotal, total){
     var lines = [];
     lines.push('🕯 <b>Новый заказ — Тёплый воск</b>');
     lines.push('');
     lines.push('👤 Имя: '+escapeHtml(customer.name));
     lines.push('📞 Телефон: '+escapeHtml(customer.phone));
-    lines.push('📍 Адрес: '+escapeHtml(customer.address));
+    lines.push('📍 Самовывоз: г. Витебск, пр-т Фрунзе 45, кв 29');
     if(customer.comment && customer.comment.trim()) lines.push('💬 Комментарий: '+escapeHtml(customer.comment));
     lines.push('');
     lines.push('<b>Товары:</b>');
@@ -876,7 +867,6 @@
     });
     lines.push('');
     lines.push('Товары: '+subtotal+' руб');
-    lines.push('Доставка: '+(delivery===0?'бесплатно':delivery+' руб'));
     lines.push('<b>Итого: '+total+' руб</b>');
     return lines.join('\n');
   }
@@ -885,17 +875,15 @@
     if(cart.length === 0) return;
     var name = (document.getElementById('f-name')||{}).value || '';
     var phone = (document.getElementById('f-phone')||{}).value || '';
-    var address = (document.getElementById('f-address')||{}).value || '';
     var comment = (document.getElementById('f-comment')||{}).value || '';
-    if(!name.trim() || !phone.trim() || !address.trim()){
-      showToast('Заполните имя, телефон и адрес');
+    if(!name.trim() || !phone.trim()){
+      showToast('Заполните имя и телефон');
       return;
     }
     var subtotal = cart.reduce(function(s,i){return s + i.unitPrice*i.qty;},0);
-    var delivery = subtotal > 30 ? 0 : 5;
-    var total = subtotal + delivery;
-    var customer = { name:name, phone:phone, address:address, comment:comment };
-    var text = buildOrderText(customer, cart, subtotal, delivery, total);
+    var total = subtotal;
+    var customer = { name:name, phone:phone, pickup:'г. Витебск, пр-т Фрунзе 45, кв 29', comment:comment };
+    var text = buildOrderText(customer, cart, subtotal, total);
 
     var checkoutBtn = document.getElementById('checkout-btn');
     if(checkoutBtn){ checkoutBtn.disabled = true; checkoutBtn.textContent = 'Отправляем…'; }
@@ -915,7 +903,7 @@
     if(!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN.indexOf('ВАШ_') === 0){
       // Токен ещё не настроен — пробуем запасной способ (Telegram Mini App) или сообщаем об этом.
       if(tg && typeof tg.sendData === 'function'){
-        try{ tg.sendData(JSON.stringify({customer:customer, items:cart, subtotal:subtotal, delivery:delivery, total:total})); onSuccess(); }
+        try{ tg.sendData(JSON.stringify({customer:customer, items:cart, subtotal:subtotal, total:total})); onSuccess(); }
         catch(e){ onFailure(); }
       } else {
         if(checkoutBtn){ checkoutBtn.disabled = false; checkoutBtn.textContent = 'Оформить заказ · '+total+' руб'; }
